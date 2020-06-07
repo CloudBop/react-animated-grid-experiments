@@ -1,26 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import AppWrapper from './Components/AppWrapper';
 
 function App() {
+  // top level component, should only render once
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    // onclick has to be in lamda or creates infinte loop
+    <React.Fragment>
+      <AppWrapper />
+    </React.Fragment>
   );
 }
+
+/* world where the edges consider the other side neighbours 
+      (otherwise the edges never change) then you can do it really neatly using modulus like this:
+      const countNeighbors = (grid: any, x: number, y: number) => {
+        return operations.reduce((acc, [i, j]) => {
+          const row = (x + i + numRows) % numRows;
+          const col = (y + j + numCols) % numCols;
+          acc += grid[row][col];
+          return acc;
+        }, 0);
+      };
+      */
 
 export default App;

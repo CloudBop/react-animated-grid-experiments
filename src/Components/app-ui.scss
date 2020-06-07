@@ -1,0 +1,15 @@
+.app-ui {
+  background-color: #246;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  width: 20vw;
+  button,
+  label,
+  legend {
+    padding: 5px;
+    margin: 5px 0;
+    background-color: antiquewhite;
+    text-transform: uppercase;
+  }
+}
