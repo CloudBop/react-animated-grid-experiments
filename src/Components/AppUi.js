@@ -5,6 +5,10 @@ import './app-ui.scss';
 function AppUi() {
   //
   const {
+    circleSize,
+    setCircleSize,
+    gridSize,
+    setGridSize,
     isPlaying,
     framePerSecond,
     setFramePerSecond,
@@ -14,7 +18,8 @@ function AppUi() {
     toggleInitialised,
     clearGrid,
     randomGrid,
-    chequeredGrid,
+    logTheGrid,
+    // chequeredGrid,
     applyAnimationMode,
     beatPerMin,
     setBeatPerMin,
@@ -22,13 +27,16 @@ function AppUi() {
     setTimeSig,
     //
     changeResolution,
-    setChangeResolution
+    setChangeResolution,
+    //
+    fireTick
   } = useContext(GridContext);
   //
   return (
     <div className="app-ui">
       <button
         onClick={() => {
+          //
           toggleIsPlaying();
           if (!isPlaying) {
             runningRef.current = true;
@@ -41,33 +49,15 @@ function AppUi() {
 
       <button onClick={clearGrid}>Clear</button>
       <button onClick={randomGrid}>random</button>
-      <button
-      // onClick={() =>
-      //   setGrid(gCurrent => {
-      //     return produce(gCurrent, gCopy => {
-      //       //
-      //       for (let i = 0; i < gCurrent.length; i++) {
-      //         for (let k = 0; k < gCurrent[0].length; k++) {
-      //           gCopy[i][k] = !gCurrent[i][k];
-      //         }
-      //       }
-      //     });
-      //   })}
-      >
-        increase tick
-      </button>
-      <button onClick={chequeredGrid}>chequer board</button>
+      <button onClick={fireTick}>increase tick</button>
       <select onChange={applyAnimationMode}>
         <option value="random">random</option>
         <option value="invert">invert</option>
         <option value="gol">gameoflife</option>
         <option value="gol-wrap">gol wrapped</option>
+        <option value="chequrd">chequer-invert</option>
       </select>
-      <button //onClick={
-      // () => console.log(grid)}
-      >
-        log state
-      </button>
+      <button onClick={logTheGrid}>log state</button>
       <label htmlFor="fps">
         CB Delta (% FPS)
         <input
@@ -155,6 +145,27 @@ function AppUi() {
           id="'2&4'"
           checked={changeResolution === '2&4'}
           onChange={e => setChangeResolution(e.currentTarget.name)}
+        />
+      </label>
+
+      <label htmlFor="grid-size">
+        Grid Size - {gridSize}
+        <input
+          type="number"
+          value={gridSize}
+          name="grid-size"
+          id="'grid-size'"
+          onChange={e => setGridSize(e.currentTarget.value)}
+        />
+      </label>
+      <label htmlFor="circle-size">
+        Circle radius
+        <input
+          value={circleSize}
+          onChange={e => setCircleSize(e.currentTarget.value)}
+          type="number"
+          name="circle-size"
+          id="'circle-size'"
         />
       </label>
     </div>

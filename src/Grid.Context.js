@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, useRef } from 'react';
 import Metronome from './Metronome/metronome';
-import CONSTANTS from './constants';
+// import CONSTANTS from './constants';
 //
 import {
   generateEmptyGrid,
@@ -22,6 +22,11 @@ const metronome = new Metronome();
 //
 const GridProvider = ({ children }) => {
   //
+  const [ gridSize, setGridSize ] = useState(10);
+  const [ circleSize, setCircleSize ] = useState(10);
+  const [ grid, setGrid ] = useState(() => generateEmptyGrid(gridSize, gridSize));
+  //
+  // console.log('gridSize', gridSize);
   // metronomes, web audio
   const [ beatPerMin, setBeatPerMin ] = useState(60);
   const [ isInitilised, setisInitilised ] = useState(false);
@@ -34,16 +39,23 @@ const GridProvider = ({ children }) => {
   // everything to do with rendering animation state
   const [ animationMode, setAnimationMode ] = useState('random');
   const [ framePerSecond, setFramePerSecond ] = useState(60);
-  const [ grid, setGrid ] = useState(() => generateEmptyGrid(CONSTANTS.numRows, CONSTANTS.numCols));
   const [ changeResolution, setChangeResolution ] = useState('Qs');
-  const randomGrid = () => setGrid(generateRandomGrid());
-  const clearGrid = () => setGrid(generateEmptyGrid());
-  const chequeredGrid = () => setGrid(generateChequer());
+  const randomGrid = () => setGrid(generateRandomGrid(grid));
+  const clearGrid = () => setGrid(generateEmptyGrid(gridSize, gridSize));
   const applyAnimationMode = e => setAnimationMode(e.currentTarget.value);
   //
+  const chequeredGrid = () => setGrid(generateChequer());
   const invertGrid = () => setGrid(grid => invertCurrentGrid(grid));
   const gameOfLife = () => setGrid(grid => gameOfLifeRules(grid));
   const gameOfLifeWrap = () => setGrid(grid => gameOfLifeWrapAroundRules(grid));
+  //
+  useEffect(
+    () => {
+      // update grid size
+      setGrid(generateEmptyGrid(gridSize, gridSize));
+    },
+    [ gridSize ]
+  );
 
   useEffect(
     () => {
@@ -63,6 +75,7 @@ const GridProvider = ({ children }) => {
       // console.log('metronome', metronome);
       if (isInitilised && isPlaying) {
         metronome.play();
+        // debugger;
       } else if (isInitilised && !isPlaying) {
         metronome.stop();
       }
@@ -85,11 +98,18 @@ const GridProvider = ({ children }) => {
     [ timeSig ]
   );
 
+  useEffect(
+    () => {
+      if (animationMode === 'chequrd') chequeredGrid();
+    },
+    [ animationMode ]
+  );
+
   const runningRef = useRef(isPlaying);
   runningRef.current = isPlaying;
   // const runningRef = useRef(isPlaying);
   // runningRef.current = isPlaying;
-  let cb = null;
+  let cb;
   //
   switch (animationMode) {
     case 'random':
@@ -103,6 +123,9 @@ const GridProvider = ({ children }) => {
       break;
     case 'gol-wrap':
       cb = gameOfLifeWrap;
+      break;
+    case 'chequrd':
+      cb = invertGrid;
       break;
     default:
       cb = randomGrid;
@@ -126,7 +149,8 @@ const GridProvider = ({ children }) => {
         //
         while (metronome.nIq.length && metronome.nIq[0].time < metronome.audioCtx.currentTime) {
           metronome.currentNote = metronome.nIq[0].note;
-          const removed = metronome.nIq.splice(0, 1); // remove note from queue
+          // const removed =
+          metronome.nIq.splice(0, 1); // remove note from queue
         }
         // We only need to trigger draw if the note has moved.
         if (metronome.last16thNoteDrawn !== metronome.currentNote) {
@@ -173,9 +197,20 @@ const GridProvider = ({ children }) => {
     },
     [ loop, isPlaying ]
   );
+  const fireTick = () => {
+    // - todo cb should be ref
+    cb();
+  };
+  //
+  const logTheGrid = () => console.log(grid);
   return (
     <GridContext.Provider
       value={{
+        circleSize,
+        setCircleSize,
+        gridSize,
+        setGridSize,
+
         grid,
         setGrid,
         clearGrid,
@@ -187,6 +222,7 @@ const GridProvider = ({ children }) => {
         changeResolution,
         setChangeResolution,
         //
+        fireTick,
         //
         runningRef,
         //
@@ -198,7 +234,8 @@ const GridProvider = ({ children }) => {
         beatPerMin,
         setBeatPerMin,
         timeSig,
-        setTimeSig
+        setTimeSig,
+        logTheGrid
       }}
     >
       {children}

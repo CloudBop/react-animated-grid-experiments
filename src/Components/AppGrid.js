@@ -2,16 +2,16 @@ import React, { useContext } from 'react';
 import { GridContext } from '../Grid.Context';
 import produce from 'immer';
 import './app-grid.scss';
-import CONSTANTS from '../constants';
 //
 function AppGrid() {
-  const { grid, setGrid } = useContext(GridContext);
+  const { grid, setGrid, gridSize, circleSize } = useContext(GridContext);
   return (
     <div className="grid-container">
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: `repeat(${CONSTANTS.numCols}, 50px)`,
+          gridTemplateColumns: `repeat(${gridSize}, min-content)`,
+          gridTemplateRows: `repeat(${gridSize}, min-content)`,
           justifyContent: 'center',
           alignItems: 'center'
         }}
@@ -30,8 +30,8 @@ function AppGrid() {
               }}
               key={`${i}-${k}`}
               style={{
-                width: 50,
-                height: 50,
+                width: `${circleSize}px`,
+                height: `${circleSize}px`,
                 backgroundColor: grid[i][k] ? '#2d2c90' : '#929bd8',
                 border: 'solid 0px #2d2c90',
                 borderRadius: '50%'
